@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  api:
+    build: ./api
+    container_name: demo-api
+    ports:
+      - "5000:5000"
+    networks:
+      - demo-network
+
+  frontend:
+    image: nginx:alpine
+    container_name: demo-frontend
+    ports:
+      - "8080:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+    networks:
+      - demo-network
+    depends_on:
+      - api
+
+networks:
+  demo-network:
+    driver: bridge
