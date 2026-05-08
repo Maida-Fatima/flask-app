@@ -9,8 +9,7 @@ students = [
 
 @app.route('/api/health')
 def health():
-    # INTENTIONAL BUG - returning 500 error
-    return jsonify({'status': 'error'}), 500
+    return jsonify({'status': 'ok'}), 200
 
 @app.route('/api/students', methods=['GET'])
 def get_students():
