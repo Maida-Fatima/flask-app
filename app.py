@@ -9,8 +9,7 @@ students = [
 
 @app.route('/api/health')
 def health():
-    # INTENTIONAL BUG - returning 500 error instead of 200
-    return jsonify({'status': 'error'}), 500
+    return jsonify({'status': 'ok'}), 200
 
 @app.route('/api/students', methods=['GET'])
 def get_students():
@@ -26,11 +25,16 @@ def get_student(student_id):
 @app.route('/api/students', methods=['POST'])
 def add_student():
     data = request.get_json()
-    if not data or 'name' not in data or 'grade' not in data:
-        return jsonify({'error': 'Missing name or grade'}), 400
+    # Allow name only (grade becomes N/A)
+    if not data or 'name' not in data:
+        return jsonify({'error': 'Missing name field'}), 400
     
     new_id = len(students) + 1
-    new_student = {'id': new_id, 'name': data['name'], 'grade': data['grade']}
+    new_student = {
+        'id': new_id, 
+        'name': data['name'], 
+        'grade': data.get('grade', 'N/A')
+    }
     students.append(new_student)
     return jsonify(new_student), 201
 
