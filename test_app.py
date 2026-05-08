@@ -30,6 +30,10 @@ def test_add_student(client):
     data = response.get_json()
     assert data['name'] == 'Memoona'
 
-def test_add_student_missing_field(client):
+def test_add_student_missing_grade(client):
+    """Test that adding a student with only name works (grade defaults to N/A)"""
     response = client.post('/api/students', json={'name': 'Sara'})
     assert response.status_code == 201
+    data = response.get_json()
+    assert data['name'] == 'Sara'
+    assert data['grade'] == 'N/A'
