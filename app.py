@@ -1,20 +1,16 @@
 from flask import Flask, jsonify, request
 app = Flask(__name__)
 
-# In-memory storage
 students = [
     {'id': 1, 'name': 'Alice', 'grade': 'A'},
     {'id': 2, 'name': 'Bob', 'grade': 'B'},
     {'id': 3, 'name': 'Charlie', 'grade': 'C'}
 ]
 
-@app.route('/')
-def hello():
-    return 'Hello from Docker!'
-
 @app.route('/api/health')
 def health():
-    return jsonify({'status': 'ok'})
+    # INTENTIONAL BUG - returning 500 error instead of 200
+    return jsonify({'status': 'error'}), 500
 
 @app.route('/api/students', methods=['GET'])
 def get_students():
@@ -30,15 +26,11 @@ def get_student(student_id):
 @app.route('/api/students', methods=['POST'])
 def add_student():
     data = request.get_json()
-    if not data or 'name' not in data:
-        return jsonify({'error': 'Missing name field'}), 400
+    if not data or 'name' not in data or 'grade' not in data:
+        return jsonify({'error': 'Missing name or grade'}), 400
     
-    new_id = max([s['id'] for s in students]) + 1 if students else 1
-    new_student = {
-        'id': new_id,
-        'name': data['name'],
-        'grade': data.get('grade', 'N/A')
-    }
+    new_id = len(students) + 1
+    new_student = {'id': new_id, 'name': data['name'], 'grade': data['grade']}
     students.append(new_student)
     return jsonify(new_student), 201
 
